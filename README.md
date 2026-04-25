@@ -2,7 +2,7 @@
 
 > A human-first manufacturing ERP system for textile factories. Digitize decisions, not machines.
 
-[![GitBook](https://img.shields.io/badge/Technical_Book-GitBook-blue)](https://knitflow.gitbook.io)
+[![CI](https://github.com/manchxz/KnitFlow-ERP/actions/workflows/ci.yml/badge.svg)](https://github.com/manchxz/KnitFlow-ERP/actions)
 [![License](https://img.shields.io/badge/license-MIT-green)]()
 
 ## The Problem
