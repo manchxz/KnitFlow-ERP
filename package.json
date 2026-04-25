@@ -1,0 +1,38 @@
+{
+  "name": "knitflow-erp",
+  "version": "1.0.0",
+  "description": "Human-first manufacturing ERP for textile factories",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "lint": "eslint algorithms/**/*.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "erp",
+    "manufacturing",
+    "textile",
+    "algorithms",
+    "typescript",
+    "offline-first",
+    "priority-queue",
+    "hash-map"
+  ],
+  "author": "Manish Mahto",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manchxz/KnitFlow-ERP.git"
+  }
+}
