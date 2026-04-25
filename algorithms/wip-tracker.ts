@@ -167,26 +167,26 @@ class WIPTracker {
     const totalUnits = activeRecords.reduce((sum, r) => sum + r.totalQuantity, 0);
 
     // Stage distribution
-    const stageDistribution = this.stages.map(stage => {
-      const ordersAtStage = activeRecords.filter(r => r.currentStage === stage.name);
+    const stageDistribution = this.stages.map(productionStage => {
+      const ordersAtStage = activeRecords.filter(r => r.currentStage === productionStage.name);
       const unitsAtStage = ordersAtStage.reduce((sum, r) => {
-        const stage = r.stages.find(s => s.stageName === stage.name);
-        return sum + (stage?.inProgress || 0);
+        const wipStage = r.stages.find(s => s.stageName === productionStage.name);
+        return sum + (wipStage?.inProgress || 0);
       }, 0);
 
       // Calculate average days at this stage
       const avgDays = ordersAtStage.length > 0
         ? ordersAtStage.reduce((sum, r) => {
-            const stage = r.stages.find(s => s.stageName === stage.name);
-            if (stage?.startDate) {
-              return sum + (Date.now() - stage.startDate.getTime()) / (1000 * 60 * 60 * 24);
+            const wipStage = r.stages.find(s => s.stageName === productionStage.name);
+            if (wipStage?.startDate) {
+              return sum + (Date.now() - wipStage.startDate.getTime()) / (1000 * 60 * 60 * 24);
             }
             return sum;
           }, 0) / ordersAtStage.length
         : 0;
 
       return {
-        stage: stage.name,
+        stage: productionStage.name,
         orders: ordersAtStage.length,
         units: unitsAtStage,
         avgDays: Math.round(avgDays * 10) / 10

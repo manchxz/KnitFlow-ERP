@@ -25,7 +25,6 @@ interface SyncRecord {
 class OfflineSyncManager {
   private localDB: Map<string, SyncRecord> = new Map();  // IndexedDB simulation
   private isOnline: boolean = true;
-  private syncInProgress: boolean = false;
   private maxRetries: number = 5;
 
   // ===== PUBLIC API =====
@@ -210,5 +209,6 @@ async function runBlackoutTest() {
   console.log('All records synced — 100% data integrity maintained!');
 }
 
-// Run the test
-// runBlackoutTest();
+  // Run the test
+  // Note: sleep method would need to be called within the class
+  // runBlackoutTest();
