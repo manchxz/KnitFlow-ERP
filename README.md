@@ -162,7 +162,25 @@ KnitFlow recognizes that Indian textile manufacturing operates in resource-const
 
 ## Documentation
 
-- [Technical Book (GitBook)](https://knitflow.gitbook.io) — Comprehensive technical guide
+### 📚 GitBook Technical Book (Ready to Publish)
+
+Complete documentation in `gitbook-content/` folder:
+
+| File | Content |
+|------|---------|
+| [README.md](gitbook-content/README.md) | Home page with key metrics |
+| [the-problem.md](gitbook-content/the-problem.md) | The Problem (Why KnitFlow exists) |
+| [system-architecture.md](gitbook-content/system-architecture.md) | System Architecture (How it works) |
+| [core-modules.md](gitbook-content/core-modules.md) | Core Modules (What it does) |
+| [algorithms-deep-dive.md](gitbook-content/algorithms-deep-dive.md) | Algorithms & Data Structures |
+| [implementation.md](gitbook-content/implementation.md) | Implementation, Costs, Timeline |
+| [about.md](gitbook-content/about.md) | About the Author |
+| [SETUP-GUIDE.md](gitbook-content/SETUP-GUIDE.md) | Step-by-step GitBook setup |
+
+**Setup Instructions**: See [gitbook-content/SETUP-GUIDE.md](gitbook-content/SETUP-GUIDE.md)
+
+### 📄 GitHub Docs
+
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Core Modules](docs/MODULES.md)
 - [Algorithms & Data Structures](docs/ALGORITHMS.md)
