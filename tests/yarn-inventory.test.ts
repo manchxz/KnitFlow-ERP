@@ -552,8 +552,9 @@ describe('YarnInventoryManager', () => {
       });
 
       const report = manager.getVarianceReport();
-      expect(report.consumptions).toBe(1);
+      expect(report.styles.length).toBe(1);
       expect(report.styles).toContain('TSHIRT');
+      expect(report.avgVariance).toBeDefined();
     });
   });
 });
