@@ -1,14 +1,8 @@
 /**
- * Hash Map (O(1)) Roll Inventory Lookup
- * 
- * Instant access to any roll in inventory regardless of size.
- * Replaces hours of manual searching with a single barcode scan.
- * 
- * Time Complexity:
- *   - Lookup by Roll ID: O(1)
- *   - Insert new roll: O(1)
- *   - Update status: O(1)
- *   - Filter by shade/GSM: O(n) — acceptable for reporting
+ * Inventory Lookup - Hash Map for O(1) roll tracking
+ *
+ * Problem: Finding a roll in 10,000+ inventory takes hours
+ * Solution: Hash map gives instant lookup by roll ID
  */
 
 interface Roll {
@@ -25,77 +19,61 @@ interface Roll {
 }
 
 class InventoryManager {
-  // Primary storage: Hash Map for O(1) lookup by rollId
+  // Main storage - rollId -> Roll data
   private rolls: Map<string, Roll> = new Map();
 
-  // Secondary indexes for filtered queries
+  // Quick lookup by shade and location
   private shadeIndex: Map<string, Set<string>> = new Map();
   private locationIndex: Map<string, Set<string>> = new Map();
 
-  /**
-   * Add a new roll to inventory — O(1)
-   */
+  // Add new roll to inventory
   addRoll(roll: Roll): void {
     this.rolls.set(roll.rollId, roll);
-    
-    // Maintain secondary indexes
+
+    // Update indexes
     this.addToIndex(this.shadeIndex, roll.shade, roll.rollId);
     this.addToIndex(this.locationIndex, roll.location, roll.rollId);
   }
 
-  /**
-   * Lookup roll by barcode scan — O(1)
-   * Replaces hours of manual searching
-   */
+  // Find roll by barcode scan - O(1)
   getRoll(rollId: string): Roll | undefined {
     return this.rolls.get(rollId);
   }
 
-  /**
-   * Update roll status — O(1)
-   * e.g., INWARD → WAREHOUSE → ALLOCATED → PRODUCTION
-   */
+  // Update roll status
   updateStatus(rollId: string, newStatus: Roll['status']): boolean {
     const roll = this.rolls.get(rollId);
     if (!roll) return false;
-    
-    // Validate state transition
+
+    // Validate state change
     if (!this.isValidTransition(roll.status, newStatus)) {
-      throw new Error(`Invalid transition: ${roll.status} → ${newStatus}`);
+      throw new Error(`Can't go from ${roll.status} to ${newStatus}`);
     }
-    
+
     roll.status = newStatus;
     return true;
   }
 
-  /**
-   * Get all rolls by shade — useful for order allocation
-   */
+  // Get all rolls of a shade
   getByShade(shade: string): Roll[] {
     const ids = this.shadeIndex.get(shade);
     if (!ids) return [];
     return Array.from(ids).map(id => this.rolls.get(id)!).filter(Boolean);
   }
 
-  /**
-   * Get all rolls at a location
-   */
+  // Get all rolls at a location
   getByLocation(location: string): Roll[] {
     const ids = this.locationIndex.get(location);
     if (!ids) return [];
     return Array.from(ids).map(id => this.rolls.get(id)!).filter(Boolean);
   }
 
-  /**
-   * Total inventory count
-   */
+  // Total rolls in inventory
   getCount(): number {
     return this.rolls.size;
   }
 
-  /**
-   * Get inventory summary by status
-   */
+  // Summary by status
   getStatusSummary(): Record<string, number> {
     const summary: Record<string, number> = {};
     this.rolls.forEach(roll => {
@@ -104,18 +82,20 @@ class InventoryManager {
     return summary;
   }
 
+  // Helper to update indexes
   private addToIndex(index: Map<string, Set<string>>, key: string, rollId: string): void {
     if (!index.has(key)) index.set(key, new Set());
     index.get(key)!.add(rollId);
   }
 
+  // Valid state transitions
   private isValidTransition(current: Roll['status'], next: Roll['status']): boolean {
     const validTransitions: Record<string, string[]> = {
       'INWARD': ['WAREHOUSE'],
       'WAREHOUSE': ['ALLOCATED'],
       'ALLOCATED': ['PRODUCTION'],
       'PRODUCTION': ['QC'],
-      'QC': ['PACKED', 'PRODUCTION'],  // QC fail → reprocess
+      'QC': ['PACKED', 'PRODUCTION'],  // QC fail -> reprocess
       'PACKED': ['DISPATCHED'],
       'DISPATCHED': []
     };
@@ -123,11 +103,10 @@ class InventoryManager {
   }
 }
 
-// ===== EXAMPLE: Barcode Scan =====
-
+// Example usage
 const inventory = new InventoryManager();
 
-// Store clerk scans 10 new rolls arriving
+// Store clerk scans 10 new rolls
 for (let i = 0; i < 10; i++) {
   inventory.addRoll({
     rollId: `R-2025-${1000 + i}`,
@@ -143,15 +122,12 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
-// Later: Supervisor scans barcode to find roll
+// Supervisor scans to find roll
 const roll = inventory.getRoll('R-2025-1005');
 console.log(`Found: ${roll?.shade} ${roll?.gsm}GSM at ${roll?.location}`);
 // Output: Found: Navy Blue 180GSM at WH-A-Row3-Shelf1
 
-// Total inventory
 console.log(`Total rolls: ${inventory.getCount()}`);
 // Output: Total rolls: 10
 
-// Status summary
-console.log(inventory.getStatusSummary());
-// Output: { INWARD: 10 }
+export { InventoryManager, Roll };

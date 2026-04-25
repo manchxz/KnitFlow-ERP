@@ -1,11 +1,9 @@
 /**
- * Unit Tests for Job Scheduling (Priority Queue)
+ * Tests for Job Scheduler
  *
- * Tests the Min-Heap implementation for production job scheduling.
- * Ensures critical orders are processed in correct priority order.
+ * Tests the priority queue to make sure urgent jobs go first
  */
 
-// Minimal interface for testing
 interface JobCard {
   id: string;
   customer: string;
@@ -87,8 +85,8 @@ describe('JobScheduler', () => {
     scheduler = new JobScheduler();
   });
 
-  describe('insert', () => {
-    it('should add a job to the queue', () => {
+  describe('Adding jobs', () => {
+    it('adds a job to the queue', () => {
       scheduler.insert({
         id: 'JC-001',
         customer: 'ABC Exports',
@@ -102,7 +100,7 @@ describe('JobScheduler', () => {
       expect(scheduler.size()).toBe(1);
     });
 
-    it('should maintain heap property with multiple jobs', () => {
+    it('keeps heap order with multiple jobs', () => {
       scheduler.insert(createJob('JC-001', 3, '2025-05-02'));
       scheduler.insert(createJob('JC-002', 1, '2025-04-28'));
       scheduler.insert(createJob('JC-003', 2, '2025-04-30'));
@@ -111,12 +109,12 @@ describe('JobScheduler', () => {
     });
   });
 
-  describe('extractNext', () => {
-    it('should return null for empty queue', () => {
+  describe('Getting next job', () => {
+    it('returns null when empty', () => {
       expect(scheduler.extractNext()).toBeNull();
     });
 
-    it('should return the highest priority job', () => {
+    it('returns highest priority job first', () => {
       scheduler.insert(createJob('JC-001', 2, '2025-04-30'));
       scheduler.insert(createJob('JC-002', 1, '2025-04-28'));
       scheduler.insert(createJob('JC-003', 3, '2025-05-02'));
@@ -126,7 +124,7 @@ describe('JobScheduler', () => {
       expect(next?.priority).toBe(1);
     });
 
-    it('should break ties by deadline', () => {
+    it('uses deadline as tiebreaker', () => {
       scheduler.insert(createJob('JC-001', 1, '2025-04-30'));
       scheduler.insert(createJob('JC-002', 1, '2025-04-28'));
 
@@ -134,19 +132,19 @@ describe('JobScheduler', () => {
       expect(next?.id).toBe('JC-002'); // Earlier deadline wins
     });
 
-    it('should reduce size after extraction', () => {
+    it('removes job from queue', () => {
       scheduler.insert(createJob('JC-001', 1, '2025-04-28'));
       scheduler.extractNext();
       expect(scheduler.size()).toBe(0);
     });
   });
 
-  describe('peek', () => {
-    it('should return null for empty queue', () => {
+  describe('Peeking', () => {
+    it('returns null when empty', () => {
       expect(scheduler.peek()).toBeNull();
     });
 
-    it('should return highest priority job without removing', () => {
+    it('shows next job without removing', () => {
       scheduler.insert(createJob('JC-001', 2, '2025-04-30'));
       scheduler.insert(createJob('JC-002', 1, '2025-04-28'));
 
@@ -156,8 +154,8 @@ describe('JobScheduler', () => {
     });
   });
 
-  describe('getAllJobs', () => {
-    it('should return all jobs sorted by priority', () => {
+  describe('All jobs', () => {
+    it('returns jobs sorted by priority', () => {
       scheduler.insert(createJob('JC-001', 3, '2025-05-02'));
       scheduler.insert(createJob('JC-002', 1, '2025-04-28'));
       scheduler.insert(createJob('JC-003', 2, '2025-04-30'));
@@ -167,14 +165,28 @@ describe('JobScheduler', () => {
     });
   });
 
-  describe('production scenario', () => {
-    it('should handle Friday 4 PM rush scenario', () => {
-      // Simulate 3 urgent orders arriving at once
-      scheduler.insert(createJob('JC-001', 1, '2025-04-28', 'ABC Exports'));
-      scheduler.insert(createJob('JC-002', 2, '2025-04-30', 'XYZ Garments'));
-      scheduler.insert(createJob('JC-003', 3, '2025-05-02', 'Local Buyer'));
+  describe('Real scenario - Friday 4 PM', () => {
+    it('handles urgent orders correctly', () => {
+      // Friday 4 PM - 3 urgent orders
+      scheduler.insert({
+        id: 'JC-001', customer: 'ABC Exports', priority: 1,
+        deadline: new Date('2025-04-28'), machineRequired: 'M01',
+        estimatedDuration: 8, materialStatus: 'ready'
+      });
 
-      // Monday morning: process next job
+      scheduler.insert({
+        id: 'JC-002', customer: 'XYZ Garments', priority: 2,
+        deadline: new Date('2025-04-30'), machineRequired: 'M02',
+        estimatedDuration: 6, materialStatus: 'ready'
+      });
+
+      scheduler.insert({
+        id: 'JC-003', customer: 'Local Buyer', priority: 3,
+        deadline: new Date('2025-05-02'), machineRequired: 'M01',
+        estimatedDuration: 4, materialStatus: 'pending'
+      });
+
+      // Monday morning - ABC Exports first
       const next = scheduler.extractNext();
       expect(next?.customer).toBe('ABC Exports');
       expect(next?.priority).toBe(1);
@@ -182,7 +194,7 @@ describe('JobScheduler', () => {
   });
 });
 
-// Test helper
+// Helper to make test jobs
 function createJob(
   id: string,
   priority: number,

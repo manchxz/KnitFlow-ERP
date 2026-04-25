@@ -1,69 +1,30 @@
 # KnitFlow ERP
 
-> A human-first manufacturing ERP for textile factories. Digitize decisions, not machines.
+Textile factory ERP that works even when WiFi doesn't.
 
-[![CI](https://github.com/manchxz/KnitFlow-ERP/actions/workflows/ci.yml/badge.svg)](https://github.com/manchxz/KnitFlow-ERP/actions)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/manchxz/KnitFlow-ERP)
+Built at my factory in Bangalore after IoT sensors failed and cost us lakhs.
 
----
+## The Story
 
-## Key Metrics
+Tried Industry 4.0. Spent Rs.12 lakhs on sensors. They died in 3 months from cotton dust and power cuts.
 
-| Metric | Result |
-|--------|--------|
-| **Production Downtime Reduced** | 15% |
-| **Overall Output Increased** | 8% |
-| **Photo Compression** | 97% (3MB → 50KB) |
-| **Data Integrity (3-day blackout)** | 100% |
-| **Roll Lookup Speed** | O(1) - Instant |
-| **Implementation Cost** | Rs.2L vs Rs.30L (IoT) |
+Built this instead for Rs.2 lakhs. Tablets + barcode scanners. Works offline. 3-day blackout test passed.
 
----
+## Results
 
-## What is KnitFlow?
+- 15% less downtime
+- 8% more output  
+- Zero data loss
 
-KnitFlow ERP is a manufacturing management system built specifically for textile factories in India. Unlike expensive Industry 4.0 solutions that require Rs.30,000+ per machine for IoT sensors, KnitFlow takes a different approach:
+## Read More
 
-> **"Digitize the Decision, Not the Machine"**
+- [The Problem](the-problem.md) - Why I built this
+- [System Architecture](system-architecture.md) - How it works
+- [Core Modules](core-modules.md) - What it does
+- [Algorithms](algorithms-deep-dive.md) - The tech stuff
+- [Implementation](implementation.md) - Costs and timeline
+- [About Me](about.md) - Who built this
 
-Instead of monitoring machines with sensors that fail in harsh factory environments (dust, vibration, power fluctuations), KnitFlow empowers supervisors with affordable tablets and barcode scanners that work reliably—even when the WiFi doesn't.
-
----
-
-## The 3-Day Blackout Story
-
-**The Test:**
-1. Disconnect factory WiFi
-2. Operate for 3 full days using only local data
-3. Reconnect WiFi
-4. Verify data integrity
-
-**The Result:**
-- ✅ 100% data integrity (zero lost records)
-- ✅ <5 minute sync time
-- ✅ Zero duplicates
-- ✅ All 500+ production records intact
-
-This is the offline-first promise: **Your data is safe even if WiFi dies for 3 days.**
-
----
-
-## Quick Navigation
-
-- [The Problem](the-problem.md) — Why paper tracking kills productivity
-- [System Architecture](system-architecture.md) — 3-layer design & offline-first
-- [Core Modules](core-modules.md) — Inventory, Planning, QC, Finance
-- [Algorithms Deep Dive](algorithms-deep-dive.md) — Why Min-Heap, Hash Map, Trees
-- [Implementation](implementation.md) — Tech stack, testing, costs
-- [About](about.md) — Who built this and why
-
----
-
-## GitHub Repository
+## GitHub
 
 [github.com/manchxz/KnitFlow-ERP](https://github.com/manchxz/KnitFlow-ERP)
-
-- ✅ MIT Licensed
-- ✅ TypeScript algorithms with full test coverage
-- ✅ CI/CD pipeline
-- ✅ Open source and actively maintained

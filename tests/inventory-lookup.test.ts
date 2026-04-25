@@ -1,8 +1,7 @@
 /**
- * Unit Tests for Inventory Lookup (Hash Map)
+ * Tests for Inventory Manager
  *
- * Tests O(1) roll lookup implementation for textile inventory.
- * Validates instant access to roll data by barcode/roll ID.
+ * Tests the hash map for instant roll lookup
  */
 
 interface Roll {
@@ -95,15 +94,15 @@ describe('InventoryManager', () => {
     inventory = new InventoryManager();
   });
 
-  describe('addRoll', () => {
-    it('should add a roll to inventory', () => {
+  describe('Adding rolls', () => {
+    it('adds a roll to inventory', () => {
       const roll = createRoll('R-2025-0001');
       inventory.addRoll(roll);
 
       expect(inventory.getCount()).toBe(1);
     });
 
-    it('should update count with multiple rolls', () => {
+    it('updates count with multiple rolls', () => {
       for (let i = 1; i <= 10; i++) {
         inventory.addRoll(createRoll(`R-2025-${1000 + i}`));
       }
@@ -112,8 +111,8 @@ describe('InventoryManager', () => {
     });
   });
 
-  describe('getRoll', () => {
-    it('should return roll by ID (O(1) lookup)', () => {
+  describe('Finding rolls', () => {
+    it('finds roll by ID instantly', () => {
       const roll = createRoll('R-2025-0001', 'Navy Blue', 'WH-A-Row1-Shelf1');
       inventory.addRoll(roll);
 
@@ -122,13 +121,13 @@ describe('InventoryManager', () => {
       expect(found?.shade).toBe('Navy Blue');
     });
 
-    it('should return undefined for non-existent roll', () => {
+    it('returns undefined for missing roll', () => {
       expect(inventory.getRoll('R-2025-9999')).toBeUndefined();
     });
   });
 
-  describe('updateStatus', () => {
-    it('should update roll status', () => {
+  describe('Status updates', () => {
+    it('updates roll status', () => {
       const roll = createRoll('R-2025-0001', 'Navy Blue', 'WH-A-Row1-Shelf1', 'INWARD');
       inventory.addRoll(roll);
 
@@ -136,7 +135,7 @@ describe('InventoryManager', () => {
       expect(inventory.getRoll('R-2025-0001')?.status).toBe('WAREHOUSE');
     });
 
-    it('should reject invalid status transitions', () => {
+    it('rejects invalid status changes', () => {
       const roll = createRoll('R-2025-0001', 'Navy Blue', 'WH-A-Row1-Shelf1', 'INWARD');
       inventory.addRoll(roll);
 
@@ -145,13 +144,13 @@ describe('InventoryManager', () => {
       }).toThrow('Invalid transition');
     });
 
-    it('should return false for non-existent roll', () => {
+    it('returns false for non-existent roll', () => {
       expect(inventory.updateStatus('R-2025-9999', 'WAREHOUSE')).toBe(false);
     });
   });
 
-  describe('getByShade', () => {
-    it('should return rolls by shade', () => {
+  describe('Finding by shade', () => {
+    it('returns rolls by shade', () => {
       inventory.addRoll(createRoll('R-2025-0001', 'Navy Blue'));
       inventory.addRoll(createRoll('R-2025-0002', 'Navy Blue'));
       inventory.addRoll(createRoll('R-2025-0003', 'Red'));
@@ -160,13 +159,13 @@ describe('InventoryManager', () => {
       expect(navyRolls.length).toBe(2);
     });
 
-    it('should return empty array for unknown shade', () => {
+    it('returns empty array for unknown shade', () => {
       expect(inventory.getByShade('Unknown')).toEqual([]);
     });
   });
 
-  describe('getByLocation', () => {
-    it('should return rolls by location', () => {
+  describe('Finding by location', () => {
+    it('returns rolls by location', () => {
       inventory.addRoll(createRoll('R-2025-0001', 'Navy Blue', 'WH-A-Row1-Shelf1'));
       inventory.addRoll(createRoll('R-2025-0002', 'Red', 'WH-A-Row1-Shelf1'));
       inventory.addRoll(createRoll('R-2025-0003', 'Navy Blue', 'WH-B-Row2-Shelf3'));
@@ -176,8 +175,8 @@ describe('InventoryManager', () => {
     });
   });
 
-  describe('getStatusSummary', () => {
-    it('should return count by status', () => {
+  describe('Status summary', () => {
+    it('returns count by status', () => {
       inventory.addRoll(createRoll('R-2025-0001', 'Navy Blue', 'WH-A-Row1', 'INWARD'));
       inventory.addRoll(createRoll('R-2025-0002', 'Red', 'WH-A-Row2', 'INWARD'));
       inventory.addRoll(createRoll('R-2025-0003', 'Blue', 'WH-B-Row1', 'WAREHOUSE'));
@@ -188,8 +187,8 @@ describe('InventoryManager', () => {
     });
   });
 
-  describe('barcode scan scenario', () => {
-    it('should instantly find roll after barcode scan', () => {
+  describe('Real scenario - Barcode scan', () => {
+    it('finds roll quickly after barcode scan', () => {
       // Store clerk scans 10 rolls
       for (let i = 0; i < 10; i++) {
         inventory.addRoll(createRoll(
@@ -207,7 +206,7 @@ describe('InventoryManager', () => {
   });
 });
 
-// Test helper
+// Helper to create test rolls
 function createRoll(
   rollId: string,
   shade: string = 'Navy Blue',

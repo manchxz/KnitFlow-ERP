@@ -4,94 +4,56 @@
 
 **Manish Mahto**
 
-Built at **Amithraj Apparels**, a 40-machine flat-knit textile manufacturing unit in Bangalore, India.
+I run Amithraj Apparels, a 40-machine textile factory in Bangalore.
 
-### The Journey
+## Why I Built This
 
-**From Factory Floor to Technical Documentation**
+We make 35,000-50,000 knitted garments per month. Export houses and domestic retailers.
 
-This isn't a theoretical ERP system designed in an office. KnitFlow was born on the factory floor:
+The problem: Paper tracking was killing us. 2 hours daily just searching for fabric rolls. Production delays. GST errors.
 
-- 🏭 **Managing machines** — 40 flat-knitting machines, 3 shifts/day
-- 📦 **Negotiating with vendors** — Yarn suppliers, dyeing houses, transporters
-- 👷 **Working with supervisors** — Understanding real workflows, not imagined ones
-- 📉 **Losing money to inefficiency** — That's what drove this solution
+Tried IoT sensors. Rs.30,000 per machine. 40 machines = Rs.12 lakhs. They died in 3 months from:
+- Cotton dust clogging sensors
+- 45°C heat
+- Daily power fluctuations
+- Unreliable WiFi
 
-### The Realization
+Wasted money. Learned lesson.
 
-After trying to implement "Industry 4.0" IoT solutions that failed within months (sensors clogged with cotton dust, wiring fried by power fluctuations), I realized:
+Built KnitFlow instead. Rs.2 lakhs total. Tablets + barcode scanners. Works offline.
 
-> Indian textile manufacturing needs solutions designed **for** Indian conditions, not imported from European factories.
+## The 3-Day Test
 
-**KnitFlow Principles:**
-1. **Works when WiFi doesn't** — Offline-first architecture
-2. **Costs less than one machine** — Rs.2L vs Rs.30L
-3. **Empowers workers** — Don't watch them, give them data
-4. **Survives the environment** — Dust, heat, power fluctuations
+Disconnected WiFi. Ran factory for 3 days on local data. Reconnected. Synced everything in under 5 minutes. Zero data loss.
 
-### The Results
+That's when I knew this works.
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Production Downtime | Baseline | **-15%** |
-| Overall Output | Baseline | **+8%** |
-| Data Integrity | Paper logs | **100% digital** |
-| Photo Upload Time | 60 seconds | **2 seconds** |
+## Results
 
-### Get in Touch
+6 months in:
+- 15% less production downtime
+- 8% more output
+- 97% faster photo uploads
+- Multiple WiFi outages - zero data loss
 
-- 🐙 **GitHub**: [github.com/manchxz](https://github.com/manchxz)
-- 💼 **LinkedIn**: [linkedin.com/in/manishmahto](https://linkedin.com/in/manishmahto)
-- 📧 **Email**: contact@mahatomanish.com
-- 🌐 **Website**: [mahatomanish.com](https://mahatomanish.com)
+## Philosophy
 
----
+Don't monitor machines. Empower people.
 
-## About Amithraj Apparels
+IoT makes workers feel watched. They ignore the data.
 
-**Location**: Bangalore, India  
-**Machines**: 40 flat-knitting machines  
-**Production**: 35,000–50,000 units/month  
-**Customers**: Export houses, domestic retailers  
-**Products**: Sweaters, T-shirts, knitted garments
+Give supervisors tablets with useful info. They make better decisions. Productivity goes up.
 
-### Why This Matters
+## Contact
 
-KnitFlow wasn't built by a software company trying to sell to factories. It was built **by** a factory **for** factories.
-
-Every feature exists because it solves a real problem:
-- Hash Map lookup → Because searching for rolls took 2 hours
-- Offline-first → Because WiFi dies every other day
-- Photo compression → Because 3MB photos won't upload on 2Mbps
-- Min-Heap scheduling → Because critical orders were being missed
-
----
+- GitHub: github.com/manchxz
+- LinkedIn: linkedin.com/in/manishmahto
+- Email: contact@mahatomanish.com
 
 ## License
 
-**MIT License**
-
-Open source. Free to use, modify, and distribute. Attribution appreciated.
+MIT. Free to use. Just give credit.
 
 ---
 
-## Acknowledgments
-
-- The supervisors at Amithraj who tested early versions
-- The open-source community for tools and libraries
-- Fellow textile manufacturers who shared their pain points
-
----
-
-## Start Reading
-
-- [Home](README.md) — Key metrics and overview
-- [The Problem](the-problem.md) — Why this was needed
-- [System Architecture](system-architecture.md) — How it works
-- [Core Modules](core-modules.md) — What it does
-- [Algorithms Deep Dive](algorithms-deep-dive.md) — Technical details
-- [Implementation](implementation.md) — How to build it
-
----
-
-*Built with ❤️ on the factory floor.*
+Built with actual factory floor experience.
