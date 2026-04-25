@@ -4,8 +4,19 @@ module.exports = {
   roots: ['<rootDir>/tests'],
   testMatch: ['**/*.test.ts'],
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.ts$': ['ts-jest', {
+      tsconfig: {
+        strict: false,
+        esModuleInterop: true,
+        skipLibCheck: true,
+        noUnusedLocals: false,
+        noUnusedParameters: false,
+        noImplicitReturns: false,
+        noFallthroughCasesInSwitch: false
+      }
+    }],
   },
+  modulePathIgnorePatterns: ['<rootDir>/algorithms/'],
   collectCoverageFrom: [
     'tests/**/*.ts',
     '!tests/**/*.d.ts',

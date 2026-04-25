@@ -240,16 +240,16 @@ class WIPTracker {
       };
     });
 
-    const bottleneckStage = stageBreakdown.reduce((max, curr) =>
+    const bottleneck = stageBreakdown.reduce((max, curr) =>
       curr.units > max.units ? curr : max
-    ).stage;
+    );
 
     const snapshot: WIPSnapshot = {
       date: today,
       totalOrders: activeRecords.length,
       totalUnits: activeRecords.reduce((sum, r) => sum + r.totalQuantity, 0),
       stageBreakdown,
-      bottleneckStage: bottleneckStage.units > 0 ? bottleneckStage.stage : null,
+      bottleneckStage: bottleneck.units > 0 ? bottleneck.stage : null,
       avgProgress: activeRecords.length > 0
         ? activeRecords.reduce((sum, r) => sum + r.overallProgress, 0) / activeRecords.length
         : 0
