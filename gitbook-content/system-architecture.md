@@ -1,193 +1,102 @@
-# System Architecture
+# How It Works
 
-## Three-Layer Design
+## Three Layers
 
-KnitFlow uses a clean three-layer architecture separating concerns and enabling offline-first operation:
+The system has three parts that work together:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│              PRESENTATION LAYER                        │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │ BOD Portal   │  │ Supervisor   │  │ Barcode      │  │
-│  │ (Reports)    │  │ Tablet       │  │ Scanner      │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-└──────────────────────────┬────────────────────────────┘
-                           │
-┌──────────────────────────v────────────────────────────┐
-│              BUSINESS LOGIC LAYER                     │
-│  ┌────────────────┐  ┌──────────────────┐           │
-│  │ Inventory      │  │ Production       │           │
-│  │ Service        │  │ Service          │           │
-│  └────────────────┘  └──────────────────┘           │
-│  ┌────────────────┐  ┌──────────────────┐           │
-│  │ Quality        │  │ Finance          │           │
-│  │ Service        │  │ Service          │           │
-│  └────────────────┘  └──────────────────┘           │
-└──────────────────────────┬────────────────────────────┘
-                           │
-┌──────────────────────────v────────────────────────────┐
-│                DATA ACCESS LAYER                     │
-│  ┌────────────────┐  ┌──────────────────┐           │
-│  │ PostgreSQL     │  │ IndexedDB        │           │
-│  │ (Cloud)        │  │ (Local/Offline)  │           │
-│  └────────────────┘  └──────────────────┘           │
-│  ┌────────────────┐                                 │
-│  │ File Storage   │                                 │
-│  │ (Compressed)   │                                 │
-│  └────────────────┘                                 │
-└───────────────────────────────────────────────────────┘
-```
+**Top Layer - What Users See**
+- BOD Portal: Reports for management
+- Supervisor Tablet: Workers enter production data
+- Barcode Scanner: Quick roll tracking
+
+**Middle Layer - The Brain**
+- Inventory: Tracks all fabric rolls
+- Production: Job scheduling and planning
+- Quality: QC checks and photos
+- Finance: GST and invoicing
+
+**Bottom Layer - Data Storage**
+- PostgreSQL: Main cloud database
+- IndexedDB: Local storage on tablets (works offline)
+- File Storage: Compressed photos
 
 ---
 
-## Layer Responsibilities
+## The Offline-First Trick
 
-### Presentation Layer
+**The Promise: Your data is safe even if WiFi dies for 3 days.**
 
-| Component | Purpose | Users |
-|-----------|---------|-------|
-| **BOD Portal** | Executive dashboards, financial reports, analytics drilldown | Directors, Managers |
-| **Supervisor Tablet** | Production data entry, job card updates, QC checks | Floor Supervisors |
-| **Barcode Scanner App** | Quick roll tracking, inventory movements | Store Clerks |
+Here's how:
 
-### Business Logic Layer
+1. Worker enters data on tablet
+2. Saves immediately to local storage (IndexedDB)
+3. Tries to sync to cloud
+4. If offline: queues for later
+5. When WiFi returns: auto-syncs everything
 
-| Service | Responsibility |
-|---------|---------------|
-| **Inventory Service** | Roll tracking, stock management, location mapping |
-| **Production Service** | Job cards, priority scheduling, machine allocation |
-| **Quality Service** | 4-point inspection, defect tracking, photo compression |
-| **Finance Service** | GST calculation, invoicing, cost tracking |
+**Sync timing:**
+- 1st retry: 1 second
+- 2nd retry: 2 seconds
+- 3rd retry: 4 seconds
+- 4th retry: 8 seconds
+- 5th retry: 16 seconds
+- After that: every 30 seconds
 
-### Data Access Layer
-
-| Storage | Type | Purpose |
-|---------|------|---------|
-| **PostgreSQL** | Cloud Database | Primary persistent storage |
-| **IndexedDB** | Local Browser DB | Offline operation, instant access |
-| **File Storage** | Cloud Object Store | Compressed QC photos |
+This prevents overwhelming the server when connection is spotty.
 
 ---
 
-## The Offline-First Promise
+## Photo Compression
 
-> **"Your data is safe even if WiFi dies for 3 days"**
+Factory WiFi is slow (2-4 Mbps shared by everyone). Photos need to shrink:
 
-### How It Works
+- Original: 3 MB
+- Resize to 800x600
+- JPEG at 40% quality
+- Final: 50-80 KB
 
-```
-User enters data on tablet
-         │
-         ▼
-┌─────────────────┐
-│  IndexedDB      │ ←── Saved instantly (local)
-│  (Local)        │
-└────────┬────────┘
-         │
-    ┌────┴────┐
-    ▼         ▼
-┌───────┐   ┌──────────┐
-│Online?│   │ Offline? │
-└───┬───┘   └────┬─────┘
-    │              │
-    ▼              ▼
-┌─────────┐   ┌──────────┐
-│PostgreSQL│   │ Queue    │
-│(Cloud)   │   │ + Retry  │
-└─────────┘   └────┬─────┘
-                   │
-              ┌────┴────┐
-              ▼
-    ┌────────────────────┐
-    │ Exponential Backoff│
-    │ 1s → 2s → 4s → 30s │
-    └────────────────────┘
-```
-
-### Sync Pipeline
-
-| Step | Action | Time |
-|------|--------|------|
-| 1 | User enters data | Instant |
-| 2 | Save to IndexedDB | <10ms |
-| 3 | Attempt cloud sync | <500ms |
-| 4 | If offline, queue with retry | Automatic |
-| 5 | When WiFi returns, auto-sync | <5 min for 3 days data |
+**Result:** Upload goes from 60 seconds to 2 seconds.
 
 ---
 
-## Photo Compression Pipeline
-
-Factory WiFi is slow (2-4 Mbps shared by 20+ devices). Photos must be compressed before upload:
-
-```
-Original Photo (3 MB)
-        │
-        ▼
-┌──────────────────┐
-│ Resize 800x600   │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│ JPEG 40% quality │
-└────────┬─────────┘
-         │
-         ▼
-Final Photo (50-80 KB) ←── 97% size reduction
-```
-
-**Result**: Upload time reduced from 60 seconds to 2 seconds on 2Mbps WiFi.
-
----
-
-## Data Flow: Roll to Dispatch
-
-```
-┌────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌────┐   ┌────────┐   ┌────────┐   ┌──────────┐
-│ INWARD │ → │ WAREHOUSE│ → │ALLOCATION│ → │PRODUCTION│ → │ QC │ → │PACKING │ → │ INVOICE│ → │ DISPATCH │
-└────┬───┘   └────┬─────┘   └────┬─────┘   └────┬─────┘   └─┬──┘   └───┬────┘   └───┬────┘   └────┬─────┘
-     │            │              │              │            │          │            │            │
-Store│         System        Planner      Operator    Inspector   Staff       System       Clerk
-Clerk│           Auto           Manual       Manual       Manual     Manual       Auto        Manual
-```
-
-### Roll State Machine
+## How a Roll Moves Through the Factory
 
 ```
 INWARD → WAREHOUSE → ALLOCATED → PRODUCTION → QC → PACKED → DISPATCHED
-  │          │           │            │       │       │          │
-  ▼          ▼           ▼            ▼       ▼       ▼          ▼
-New      Available   Reserved    In Progress  Check  Ready     Shipped
-Stock    for Use     for Order   on Machine        for Ship
+   │          │           │            │       │       │          │
+ Store      System      Planner     Operator  QC     Staff      Truck
+ Clerk      Update      Schedules    Works   Check   Packs      Takes
+                                        Inspects
 ```
 
-Each transition is validated—no skipping stages, no invalid operations.
+Each step is tracked. Can't skip steps. Full history known.
 
 ---
 
-## Performance Targets
+## Why IndexedDB?
 
-| Metric | Target | Status |
-|--------|--------|--------|
-| Roll lookup | <10ms (O(1)) | ✅ Achieved |
-| Job scheduling | <50ms (O(log n)) | ✅ Achieved |
-| Photo upload | <5s on 2Mbps | ✅ Achieved |
-| Sync recovery | <5 min after 3-day blackout | ✅ Achieved |
-| Concurrent users | 50+ | ✅ Tested |
-| Response time | <2 seconds | ✅ Achieved |
+| Feature | LocalStorage | IndexedDB |
+|---------|-------------|-----------|
+| Storage | 5 MB limit | 50+ MB |
+| Structure | Simple | Complex data |
+| Async | No | Yes |
+| Photos | No | Yes |
+| Queries | No | Yes |
 
----
-
-## Security
-
-- **Role-based access control**: Supervisor, QC, Clerk, Manager, Admin
-- **Encrypted local storage**: IndexedDB with encryption
-- **HTTPS**: All cloud sync over TLS
-- **Photo privacy**: Compression + local processing before upload
+IndexedDB is the only browser storage that handles our volume.
 
 ---
 
-## Next: Core Modules
+## Performance
 
-Learn about the [6 Core Modules](core-modules.md) that make up KnitFlow ERP.
+| Task | Target | Actual |
+|------|--------|--------|
+| Find a roll | Under 10ms | Yes |
+| Schedule jobs | Under 50ms | Yes |
+| Upload photo | Under 5 seconds | Yes |
+| Sync after outage | Under 5 minutes | Yes |
+| Users at once | 50+ | Yes |
+
+---
+
+Next: [What the modules do](core-modules.md)
